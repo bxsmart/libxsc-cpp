@@ -1,0 +1,19 @@
+cmake_minimum_required(VERSION 2.8.12.2)
+#
+ADD_DEFINITIONS(-DLINUX -DLIBXSC)
+#
+INCLUDE_DIRECTORIES(../libmisc-cpp)
+INCLUDE_DIRECTORIES($ENV{LIB_UUID}/include)
+#
+ADD_COMPILE_OPTIONS(-std=c++17 -fPIC -Wall)
+ADD_DEFINITIONS(-Wno-builtin-macro-redefined)
+SET(CMAKE_CXX_FLAGS $ENV{CXX_FLAGS})
+#
+FILE(GLOB SRC "./*/*.cpp")
+#
+PROJECT(xsc-cpp)
+#
+ADD_LIBRARY(xsc-cpp STATIC ${SRC})
+INCLUDE(./__file__.cmake)
+REDEFINE_FILE_MACRO(xsc-cpp)
+
