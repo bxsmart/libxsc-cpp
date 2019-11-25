@@ -22,8 +22,8 @@
 XscHttpCfg::XscHttpCfg() :
 		XscTcpCfg()
 {
-	this->headerSize = 0x10000;
-	this->bodySize = 0x10000;
+	this->headerLimit = 0x10000;
+	this->bodyLimit = 0x10000;
 	this->closeWait = 5;
 }
 

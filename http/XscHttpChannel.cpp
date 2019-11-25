@@ -136,9 +136,9 @@ int XscHttpChannel::evnRecvHeader(XscHttpWorker* wk, uchar* dat, int len)
 			}
 			this->rnrn = 4;
 			auto cfg = static_pointer_cast<XscHttpCfg>(((XscHttpServer*) (this->worker->server))->cfg);
-			if (cfg->headerSize > 0 && this->headerLen >= cfg->headerSize)
+			if (cfg->headerLimit > 0 && this->headerLen >= cfg->headerLimit)
 			{
-				LOG_DEBUG("over the http-header limit size(%dbytes), we will close this channel, this: %s", cfg->headerSize, this->toString().c_str())
+				LOG_DEBUG("over the http-header limit size(%dbytes), we will close this channel, this: %s", cfg->headerLimit, this->toString().c_str())
 				return -1;
 			}
 			++(this->headerLen);
@@ -158,9 +158,9 @@ int XscHttpChannel::evnRecvHeader(XscHttpWorker* wk, uchar* dat, int len)
 			break;
 		}
 		auto cfg = static_pointer_cast<XscHttpCfg>(((XscHttpServer*) (this->worker->server))->cfg);
-		if (cfg->headerSize > 0 && this->headerLen >= cfg->headerSize)
+		if (cfg->headerLimit > 0 && this->headerLen >= cfg->headerLimit)
 		{
-			LOG_DEBUG("over the http-header limit size(%dbytes), we will close this channel, this: %s", cfg->headerSize, this->toString().c_str())
+			LOG_DEBUG("over the http-header limit size(%dbytes), we will close this channel, this: %s", cfg->headerLimit, this->toString().c_str())
 			return -1;
 		}
 		++this->headerLen;
@@ -258,9 +258,9 @@ bool XscHttpChannel::checkHeader()
 			return false;
 		}
 		this->expectedBodyLen = ::atoll(it->second.c_str());
-		if (cfg->bodySize > 0 && (this->expectedBodyLen > cfg->bodySize))
+		if (cfg->bodyLimit > 0 && (this->expectedBodyLen > cfg->bodyLimit))
 		{
-			LOG_DEBUG("over the http-body limit size(%dbytes), 'Content-Length': %llubytes, we will close this channel, this: %s", cfg->bodySize, this->expectedBodyLen, this->toString().c_str())
+			LOG_DEBUG("over the http-body limit size(%dbytes), 'Content-Length': %llubytes, we will close this channel, this: %s", cfg->bodyLimit, this->expectedBodyLen, this->toString().c_str())
 			return false;
 		}
 	}

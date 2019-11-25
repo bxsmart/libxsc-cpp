@@ -29,8 +29,8 @@
 class XscHttpCfg: public XscTcpCfg
 {
 public:
-	uint headerSize; 
-	uint bodySize; 
+	uint headerLimit; 
+	uint bodyLimit; 
 	uint closeWait; 
 	unordered_set<string> requiredHeader; 
 public:
