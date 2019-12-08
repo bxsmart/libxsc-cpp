@@ -55,6 +55,12 @@ public:
 	shared_ptr<XscWorker> rr(); 
 	XscServer(const string& ne , shared_ptr<XscLog> log);
 	virtual ~XscServer();
+public:
+	static void add(const string& name, shared_ptr<XscServer> server); 
+	static shared_ptr<XscServer> get(const string& name); 
+	static void names(list<string>& lis); 
+private:
+	static unordered_map<string, shared_ptr<XscServer>> server; 
 };
 
 #endif 
