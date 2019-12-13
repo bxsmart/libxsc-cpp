@@ -20,6 +20,10 @@
 #ifndef IO_XSCTIMERMGR_H_
 #define IO_XSCTIMERMGR_H_
 
+#if !defined (__LIBXSC_H__) && !defined (LIBXSC)
+#error only libxsc.h can be included directly.
+#endif
+
 #include "XscWorker.h"
 #include "XscTimer.h"
 

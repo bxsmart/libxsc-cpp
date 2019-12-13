@@ -26,6 +26,5 @@ XscHttpChannelStat::XscHttpChannelStat()
 
 XscHttpChannelStat::~XscHttpChannelStat()
 {
-
 }
 

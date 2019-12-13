@@ -20,14 +20,14 @@
 #include "XscChannel.h"
 #include "Xsc.h"
 
-XscChannel::XscChannel(XscProtocolType proType, ActorType aType, shared_ptr<XscWorker> wk, int cfd, const string& peer) :
+XscChannel::XscChannel(XscProtocolType proType, ActorType aType, XscWorker* wk, int cfd, const string& peer) :
 		Actor(aType, wk->wk)
 {
 	this->proType = proType;
 	this->est = false;
 	this->cfd = cfd;
 	this->peer = peer;
-	this->worker = wk.get();
+	this->worker = wk;
 	this->gts = Xsc::clock;
 	this->lts = 0L;
 }

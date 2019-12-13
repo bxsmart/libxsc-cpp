@@ -31,7 +31,7 @@ class XscHttpServer;
 class XscHttpWorker: public XscTcpWorker
 {
 public:
-	XscHttpWorker(shared_ptr<XscHttpServer> httpServer, int maxFdSize);
+	XscHttpWorker(XscHttpServer* httpServer);
 	virtual ~XscHttpWorker();
 };
 

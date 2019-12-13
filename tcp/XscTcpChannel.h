@@ -28,19 +28,12 @@
 #include "XscTcpChannelStat.h"
 #include "../core/XscChannel.h"
 
-typedef struct
-{
-	int len; 
-	int pos; 
-	uchar* dat; 
-} xsc_tcp_channel_wbuf; 
-
 class XscTcpChannel: public XscChannel
 {
 public:
 	int dlen; 
 	uchar* rbuf; 
-	queue<xsc_tcp_channel_wbuf*>* wbuf; 
+	queue<xsc_channel_wbuf*>* wbuf; 
 	XscTcpChannelStat stat; 
 public:
 	void send(uchar* dat, int len); 
@@ -57,7 +50,7 @@ public:
 	virtual void evnCanSend(); 
 public:
 	void cleanWbuf(); 
-	XscTcpChannel(ActorType type, shared_ptr<XscTcpWorker> wk, int mtu, int cfd, const string &peer);
+	XscTcpChannel(ActorType type, XscTcpWorker* wk, int mtu, int cfd, const string &peer);
 	virtual ~XscTcpChannel();
 };
 

@@ -26,22 +26,22 @@ XscTcpChannelStat::XscTcpChannelStat()
 
 void XscTcpChannelStat::inc(uint item)
 {
-	this->items[item % XscTcpChannelStatItem::XSC_TCP_CONNECTION_STAT_END].fetch_add(1);
+	this->items[item % XscTcpChannelStatItem::XSC_TCP_CHANNEL_STAT_END].fetch_add(1);
 }
 
 void XscTcpChannelStat::incv(uint item, ullong v)
 {
-	this->items[item % XscTcpChannelStatItem::XSC_TCP_CONNECTION_STAT_END].fetch_add(v);
+	this->items[item % XscTcpChannelStatItem::XSC_TCP_CHANNEL_STAT_END].fetch_add(v);
 }
 
 ullong XscTcpChannelStat::get(uint item)
 {
-	return this->items[item % XscTcpChannelStatItem::XSC_TCP_CONNECTION_STAT_END];
+	return this->items[item % XscTcpChannelStatItem::XSC_TCP_CHANNEL_STAT_END];
 }
 
 void XscTcpChannelStat::clear()
 {
-	for (int i = 0; i < XscTcpChannelStatItem::XSC_TCP_CONNECTION_STAT_END; ++i)
+	for (int i = 0; i < XscTcpChannelStatItem::XSC_TCP_CHANNEL_STAT_END; ++i)
 		this->items[i] = 0;
 }
 

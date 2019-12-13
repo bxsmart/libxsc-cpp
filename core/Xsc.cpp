@@ -18,6 +18,8 @@
  */
 
 #include "Xsc.h"
+#include "../rudp/XscRudpServer.h"
+#include "../rudp/XscRudpWorker.h"
 #include "../tcp/XscTcpServer.h"
 #include "../tcp/XscTcpWorker.h"
 
@@ -63,6 +65,21 @@ int Xsc::getXscWorkIndex()
 	return xscWorker == NULL ? -1 : xscWorker->wk;
 }
 
+shared_ptr<XscServer> Xsc::getXscServer()
+{
+	return Xsc::getXscTcpWorker()->server->shared_from_this();
+}
+
+shared_ptr<XscTcpServer> Xsc::getXscTcpServer()
+{
+	return static_pointer_cast<XscTcpServer>(Xsc::getXscTcpWorker()->server->shared_from_this());
+}
+
+shared_ptr<XscRudpServer> Xsc::getXscRudpServer()
+{
+	return static_pointer_cast<XscRudpServer>(Xsc::getXscTcpWorker()->server->shared_from_this());
+}
+
 XscWorker* Xsc::getXscWorker()
 {
 	return (XscWorker*) ::pthread_getspecific(Xsc::pkey);
@@ -73,14 +90,9 @@ XscTcpWorker* Xsc::getXscTcpWorker()
 	return (XscTcpWorker*) Xsc::getXscWorker();
 }
 
-shared_ptr<XscTcpServer> Xsc::getXscTcpServer()
+XscRudpWorker* Xsc::getXscRudpWorker()
 {
-	return static_pointer_cast<XscTcpServer>(Xsc::getXscTcpWorker()->server->shared_from_this());
-}
-
-shared_ptr<XscServer> Xsc::getXscServer()
-{
-	return Xsc::getXscTcpWorker()->server->shared_from_this();
+	return (XscRudpWorker*) Xsc::getXscWorker();
 }
 
 int Xsc::genXscWorkerIndex()

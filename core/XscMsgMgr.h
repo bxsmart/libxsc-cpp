@@ -20,6 +20,10 @@
 #ifndef CORE_XSCMSGMGR_H_
 #define CORE_XSCMSGMGR_H_
 
+#if !defined (__LIBXSC_H__) && !defined (LIBXSC)
+#error only libxsc.h can be included directly.
+#endif
+
 #include <libmisc.h>
 
 enum XscMsgItcpRetType

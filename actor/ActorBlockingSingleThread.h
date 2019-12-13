@@ -20,6 +20,10 @@
 #ifndef ACTOR_ACTORBLOCKINGSINGLETHREAD_H_
 #define ACTOR_ACTORBLOCKINGSINGLETHREAD_H_
 
+#if !defined (__LIBXSC_H__) && !defined (LIBXSC)
+#error only libxsc.h can be included directly.
+#endif
+
 #include "ActorBlocking.h"
 
 class ActorBlockingSingleThread: public ActorBlocking

@@ -25,11 +25,10 @@
 #include "../core/XscTimerMgr.h"
 #include "../core/XscWorkerStat.h"
 
-XscTcpWorker::XscTcpWorker(shared_ptr<XscTcpServer> tcpServer, int maxFdSize) :
+XscTcpWorker::XscTcpWorker(XscTcpServer* tcpServer) :
 		XscWorker(tcpServer)
 {
-	this->maxFdSize = maxFdSize;
-	this->efd = ::epoll_create(this->maxFdSize);
+	this->efd = ::epoll_create(1000);
 	this->sfd = 0;
 	this->mtu = tcpServer->cfg->peerMtu;
 }
@@ -63,7 +62,7 @@ void XscTcpWorker::loop()
 	::pthread_setspecific(Xsc::pkey, this);
 	this->timerMgr.reset(new XscTimerMgr(this));
 	this->server->waitWorker->set();
-	struct epoll_event* evns = (struct epoll_event*) ::calloc(1, sizeof(struct epoll_event) * this->maxFdSize);
+	struct epoll_event* evns = (struct epoll_event*) ::calloc(1, sizeof(struct epoll_event) * 0x10000);
 	this->addCfd4Read(this->evn);
 	LOG_INFO("worker-thread start successful, server-name: %s, index: 0x%02X, epoll-fd: 0x%08X, evn: 0x%08X", this->server->ne.c_str(), this->wk, this->efd, this->evn)
 	int i = 0;
@@ -72,7 +71,7 @@ void XscTcpWorker::loop()
 	while (1)
 	{
 		this->busy = false;
-		count = ::epoll_wait(this->efd, evns, this->maxFdSize, -1);
+		count = ::epoll_wait(this->efd, evns, 0x10000, -1);
 		this->busy = true;
 		haveItcEvent = false;
 		for (i = 0; i < count; ++i)
@@ -104,7 +103,6 @@ void XscTcpWorker::evnConn()
 {
 	static socklen_t socklen = sizeof(struct sockaddr_in);
 	XscTcpServer* tcpServer = (XscTcpServer*) this->server;
-	shared_ptr<XscTcpWorker> wk = static_pointer_cast<XscTcpWorker>(this->shared_from_this());
 	struct sockaddr_in peer;
 	int cfd;
 	while (1) 
@@ -119,9 +117,9 @@ void XscTcpWorker::evnConn()
 			continue;
 		}
 		LOG_TRACE("got a connection from: %s, cfd: %d", Net::sockaddr2str(&peer).c_str(), cfd)
-		shared_ptr<XscTcpChannel> tcpChannel = static_pointer_cast<XscTcpLog>(tcpServer->log)->newXscTcpChannel(wk, cfd, Net::sockaddr2str(&peer));
+		shared_ptr<XscTcpChannel> tcpChannel = static_pointer_cast<XscTcpLog>(tcpServer->log)->newXscTcpChannel(this, cfd, Net::sockaddr2str(&peer));
 		this->setFdAtt(tcpServer, cfd);
-		this->addTcpChannel(tcpChannel);
+		this->addChannel(tcpChannel);
 		this->addCfd4Read(cfd);
 		this->stat->inc(XscWorkerStatItem::XSC_WORKER_N2H_TOTAL);
 		this->checkZombie(tcpChannel, tcpServer->cfg->n2hZombie);
@@ -167,7 +165,7 @@ void XscTcpWorker::evnRecv(struct epoll_event* evn, bool* isItcEvent)
 			break;
 		}
 		this->stat->incv(XscWorkerStatItem::XSC_WORKER_RX_BYTES, len);
-		channel->stat.incv(XscTcpChannelStatItem::XSC_TCP_CONNECTION_RX_BYTES, len);
+		channel->stat.incv(XscTcpChannelStatItem::XSC_TCP_CHANNEL_RX_BYTES, len);
 		static_pointer_cast<XscTcpLog>(this->server->log)->rx(channel.get(), channel->rbuf + channel->dlen, len);
 		channel->dlen += len;
 		len = channel->evnRecv(this, channel->rbuf, channel->dlen);
@@ -196,19 +194,19 @@ void XscTcpWorker::evnRecv(struct epoll_event* evn, bool* isItcEvent)
 	}
 	if (channel->dlen >= this->mtu) 
 	{
-		LOG_TRACE("tcp receive buffer full, can not read any more, we will close it, channel: %s", channel->toString().c_str())
+		LOG_TRACE("tcp channel receive buffer full, can not read any more, we will close it, channel: %s", channel->toString().c_str())
 		goto label;
 	}
 	if (flag) 
 		return;
 	label:
-	LOG_TRACE("client disconnected: %s, errno(%d): %s", channel->toString().c_str(), errno, ::strerror(errno))
+	LOG_TRACE("tcp channel disconnected: %s, errno(%d): %s", channel->toString().c_str(), errno, ::strerror(errno))
 	if (!channel->est) 
 	{
-		LOG_TRACE("channel already lost: %s", channel->toString().c_str())
+		LOG_TRACE("tcp channel already lost: %s", channel->toString().c_str())
 		return;
 	}
-	this->delTcpChannel(channel->cfd);
+	this->delChannel(channel->cfd);
 	channel->est = false;
 	channel->cleanWbuf();
 	channel->clean();
@@ -225,7 +223,7 @@ void XscTcpWorker::evnErro(struct epoll_event* evn)
 	}
 	shared_ptr<XscTcpChannel> channel = it->second;
 	LOG_TRACE("tcp connection disconnected: %s, errno: %s(%d)", channel->toString().c_str(), ::strerror(errno), errno)
-	this->delTcpChannel(channel->cfd);
+	this->delChannel(channel->cfd);
 	channel->est = false;
 	channel->cleanWbuf();
 	channel->clean();
@@ -255,7 +253,7 @@ void XscTcpWorker::doFuture()
 	this->busy = false;
 }
 
-void XscTcpWorker::addTcpChannel(shared_ptr<XscTcpChannel> channel)
+void XscTcpWorker::addChannel(shared_ptr<XscTcpChannel> channel)
 {
 	auto it = this->channel.find(channel->cfd);
 	if (it != this->channel.end()) 
@@ -266,13 +264,13 @@ void XscTcpWorker::addTcpChannel(shared_ptr<XscTcpChannel> channel)
 	this->channel[channel->cfd] = channel;
 }
 
-shared_ptr<XscTcpChannel> XscTcpWorker::findTcpChannel(int cfd)
+shared_ptr<XscTcpChannel> XscTcpWorker::findChannel(int cfd)
 {
 	auto it = this->channel.find(cfd);
 	return it == this->channel.end() ? nullptr : it->second;
 }
 
-void XscTcpWorker::delTcpChannel(int cfd)
+void XscTcpWorker::delChannel(int cfd)
 {
 	if (this->channel.erase(cfd) != 1)
 	{
@@ -328,8 +326,8 @@ void XscTcpWorker::setFdAtt(XscTcpServer* tcpServer, int cfd)
 void XscTcpWorker::dida(ullong now)
 {
 	this->timerMgr->dida(now);
-	for (auto& it : this->h2ns)
-		it->dida(now);
+	for (auto& it : this->channel)
+		it.second->dida(now);
 }
 
 void XscTcpWorker::checkZombie(shared_ptr<XscTcpChannel> channel, int zombie )
@@ -363,7 +361,7 @@ void XscTcpWorker::checkHeartbeat(shared_ptr<XscTcpChannel> channel, int heartbe
 		}
 		if (Xsc::clock > channel->lts + (hb * 1000L))
 		{
-			LOG_DEBUG("n2h channel lost heart-beat, we will close it, channel: %s, elap: %dms", channel->toString().c_str(), (int)(Xsc::clock - channel->lts))
+			LOG_DEBUG("tcp n2h channel lost heart-beat, we will close it, channel: %s, elap: %llums", channel->toString().c_str(), Xsc::clock - channel->lts)
 			channel->close();
 			return false;
 		}

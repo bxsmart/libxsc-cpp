@@ -40,7 +40,7 @@ bool XscHttpServer::startup(shared_ptr<XscCfg> c)
 	this->waitWorker.reset(new XscJoinCounter(this->cfg->worker));
 	for (uint i = 0; i < this->cfg->worker; ++i)
 	{
-		shared_ptr<XscHttpWorker> worker(new XscHttpWorker(static_pointer_cast<XscHttpServer>(this->shared_from_this()), this->cfg->peerLimit / this->cfg->worker ));
+		shared_ptr<XscHttpWorker> worker(new XscHttpWorker(this));
 		worker->wk = Xsc::genXscWorkerIndex();
 		this->xscWorker.push_back(worker);
 		Xsc::xscWorker.push_back(worker);

@@ -41,7 +41,7 @@ bool XscWebSocketServer::startup(shared_ptr<XscCfg> c)
 	this->waitWorker.reset(new XscJoinCounter(this->cfg->worker));
 	for (uint i = 0; i < this->cfg->worker; ++i)
 	{
-		shared_ptr<XscWebSocketWorker> worker(new XscWebSocketWorker(static_pointer_cast<XscWebSocketServer>(this->shared_from_this()), this->cfg->peerLimit / this->cfg->worker ));
+		shared_ptr<XscWebSocketWorker> worker(new XscWebSocketWorker(this));
 		worker->wk = Xsc::genXscWorkerIndex();
 		this->xscWorker.push_back(worker);
 		Xsc::xscWorker.push_back(worker);

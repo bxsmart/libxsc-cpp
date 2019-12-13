@@ -20,6 +20,10 @@
 #ifndef WS_XSCWEBSOCKETCFG_H_
 #define WS_XSCWEBSOCKETCFG_H_
 
+#if !defined (__LIBXSC_H__) && !defined (LIBXSC)
+#error only libxsc.h can be included directly.
+#endif
+
 #include "../tcp/XscTcpCfg.h"
 
 class XscWebSocketCfg: public XscTcpCfg

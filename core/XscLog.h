@@ -20,6 +20,10 @@
 #ifndef CORE_XSCLOG_H_
 #define CORE_XSCLOG_H_
 
+#if !defined (__LIBXSC_H__) && !defined (LIBXSC)
+#error only libxsc.h can be included directly.
+#endif
+
 #include "XscChannel.h"
 
 class XscLog

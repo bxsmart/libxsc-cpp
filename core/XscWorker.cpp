@@ -22,15 +22,14 @@
 #include "XscTimerMgr.h"
 #include "XscWorkerStat.h"
 
-XscWorker::XscWorker(shared_ptr<XscServer> server) :
+XscWorker::XscWorker(XscServer* server) :
 		Actor(ActorType::ACTOR_ITC, INVALID)
 {
-	this->server = server.get();
+	this->server = server;
 	this->timerMgr = nullptr;
 	this->stat.reset(new XscWorkerStat());
 	this->pt = 0;
-	this->maxFdSize = 0;
-	this->mtu  = 0;
+	this->mtu = 0;
 	this->evn = ::eventfd(0, EFD_NONBLOCK);
 	::pthread_mutex_init(&this->mutex, NULL);
 }

@@ -22,7 +22,7 @@
 #include "XscHttpCfg.h"
 #include "../core/XscTimerMgr.h"
 
-XscHttpChannel::XscHttpChannel(shared_ptr<XscHttpWorker> wk, int mtu, int cfd, const string &peer) :
+XscHttpChannel::XscHttpChannel(XscHttpWorker* wk, int mtu, int cfd, const string &peer) :
 		XscTcpChannel(ActorType::ACTOR_N2H, wk, mtu, cfd, peer)
 {
 	this->proType = XscProtocolType::XSC_PROTOCOL_HTTP;

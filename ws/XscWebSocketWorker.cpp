@@ -20,8 +20,8 @@
 #include "XscWebSocketWorker.h"
 #include "XscWebSocketServer.h"
 
-XscWebSocketWorker::XscWebSocketWorker(shared_ptr<XscWebSocketServer> webSocketServer, int maxFdSize) :
-		XscTcpWorker(webSocketServer, maxFdSize)
+XscWebSocketWorker::XscWebSocketWorker(XscWebSocketServer* webSocketServer) :
+		XscTcpWorker(webSocketServer)
 {
 
 }

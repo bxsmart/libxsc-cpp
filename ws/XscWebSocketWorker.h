@@ -20,6 +20,10 @@
 #ifndef WS_XSCWEBSOCKETWORKER_H_
 #define WS_XSCWEBSOCKETWORKER_H_
 
+#if !defined (__LIBXSC_H__) && !defined (LIBXSC)
+#error only libxsc.h can be included directly.
+#endif
+
 #include "../tcp/XscTcpWorker.h"
 
 class XscWebSocketServer;
@@ -27,7 +31,7 @@ class XscWebSocketServer;
 class XscWebSocketWorker: public XscTcpWorker
 {
 public:
-	XscWebSocketWorker(shared_ptr<XscWebSocketServer> webSocketServer, int maxFdSize);
+	XscWebSocketWorker(XscWebSocketServer* webSocketServer);
 	virtual ~XscWebSocketWorker();
 };
 

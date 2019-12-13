@@ -20,6 +20,10 @@
 #ifndef CORE_XSCCHANNEL_H_
 #define CORE_XSCCHANNEL_H_
 
+#if !defined (__LIBXSC_H__) && !defined (LIBXSC)
+#error only libxsc.h can be included directly.
+#endif
+
 #include "XscServer.h"
 #include "XscUsr.h"
 
@@ -37,7 +41,7 @@ public:
 public:
 	void setXscUsr(shared_ptr<XscUsr> usr); 
 	void incMsg(); 
-	XscChannel(XscProtocolType proType, ActorType aType, shared_ptr<XscWorker> wk, int cfd, const string& peer);
+	XscChannel(XscProtocolType proType, ActorType aType, XscWorker* wk, int cfd, const string& peer);
 	virtual ~XscChannel();
 public:
 	virtual void send(uchar* dat, int len) = 0; 

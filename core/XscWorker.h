@@ -20,6 +20,10 @@
 #ifndef XSCWORKER_H_
 #define XSCWORKER_H_
 
+#if !defined (__LIBXSC_H__) && !defined (LIBXSC)
+#error only libxsc.h can be included directly.
+#endif
+
 #include "XscMsgMgr.h"
 #include "XscWorkerStat.h"
 #include "../actor/Actor.h"
@@ -27,12 +31,18 @@
 class XscServer;
 class XscTimerMgr;
 
+typedef struct
+{
+	int len; 
+	int pos; 
+	uchar* dat; 
+} xsc_channel_wbuf; 
+
 class XscWorker: public Actor
 {
 public:
 	volatile bool busy; 
 	int evn; 
-	int maxFdSize; 
 	int mtu; 
 	XscServer* server; 
 	shared_ptr<XscTimerMgr> timerMgr; 
@@ -45,7 +55,7 @@ public:
 	virtual void dida(ullong now) = 0; 
 public:
 	void push(function<void()> cb); 
-	XscWorker(shared_ptr<XscServer> server);
+	XscWorker(XscServer* server);
 	virtual ~XscWorker();
 };
 

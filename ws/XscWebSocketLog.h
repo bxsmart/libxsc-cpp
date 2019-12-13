@@ -20,6 +20,10 @@
 #ifndef WS_XSCWEBSOCKETLOG_H_
 #define WS_XSCWEBSOCKETLOG_H_
 
+#if !defined (__LIBXSC_H__) && !defined (LIBXSC)
+#error only libxsc.h can be included directly.
+#endif
+
 #include "XscWebSocketChannel.h"
 #include "XscWebSocketWorker.h"
 #include "../tcp/XscTcpLog.h"
@@ -27,12 +31,12 @@
 class XscWebSocketLog: public XscTcpLog
 {
 public:
-	virtual shared_ptr<XscWebSocketChannel> newXscWebSocketChannel(shared_ptr<XscWebSocketWorker> wk, int cfd, const string& peer) = 0; 
+	virtual shared_ptr<XscWebSocketChannel> newXscWebSocketChannel(XscWebSocketWorker* wk, int cfd, const string& peer) = 0; 
 public:
 	XscWebSocketLog();
 	virtual ~XscWebSocketLog();
 protected:
-	shared_ptr<XscTcpChannel> newXscTcpChannel(shared_ptr<XscTcpWorker> wk, int cfd, const string& peer); 
+	shared_ptr<XscTcpChannel> newXscTcpChannel(XscTcpWorker* wk, int cfd, const string& peer); 
 };
 
 #endif 

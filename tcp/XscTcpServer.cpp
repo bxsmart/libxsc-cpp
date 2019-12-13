@@ -41,7 +41,7 @@ bool XscTcpServer::startup(shared_ptr<XscCfg> c)
 	this->waitWorker.reset(new XscJoinCounter(this->cfg->worker));
 	for (uint i = 0; i < this->cfg->worker; ++i)
 	{
-		shared_ptr<XscTcpWorker> worker(new XscTcpWorker(static_pointer_cast<XscTcpServer>(this->shared_from_this()), this->cfg->peerLimit / this->cfg->worker ));
+		shared_ptr<XscTcpWorker> worker(new XscTcpWorker(this));
 		worker->wk = Xsc::genXscWorkerIndex();
 		this->xscWorker.push_back(worker);
 		Xsc::xscWorker.push_back(worker);

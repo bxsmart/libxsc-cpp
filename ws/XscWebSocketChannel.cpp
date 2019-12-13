@@ -19,7 +19,7 @@
 
 #include "XscWebSocketChannel.h"
 
-XscWebSocketChannel::XscWebSocketChannel(shared_ptr<XscWebSocketWorker> wk, int mtu, int cfd, const string &peer) :
+XscWebSocketChannel::XscWebSocketChannel(XscWebSocketWorker* wk, int mtu, int cfd, const string &peer) :
 		XscTcpChannel(ActorType::ACTOR_N2H, wk, mtu, cfd, peer)
 {
 	this->proType = XscProtocolType::XSC_PROTOCOL_WEBSOCKET;

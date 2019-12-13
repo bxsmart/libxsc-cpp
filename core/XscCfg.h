@@ -20,6 +20,10 @@
 #ifndef XSCCFG_H_
 #define XSCCFG_H_
 
+#if !defined (__LIBXSC_H__) && !defined (LIBXSC)
+#error only libxsc.h can be included directly.
+#endif
+
 #include <libmisc.h>
 
 class XscCfg

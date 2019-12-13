@@ -30,12 +30,12 @@
 class XscHttpLog: public XscTcpLog
 {
 public:
-	virtual shared_ptr<XscHttpChannel> newXscHttpChannel(shared_ptr<XscHttpWorker> wk, int cfd, const string& peer) = 0; 
+	virtual shared_ptr<XscHttpChannel> newXscHttpChannel(XscHttpWorker* wk, int cfd, const string& peer) = 0; 
 public:
 	XscHttpLog();
 	virtual ~XscHttpLog();
 protected:
-	shared_ptr<XscTcpChannel> newXscTcpChannel(shared_ptr<XscTcpWorker> wk, int cfd, const string& peer); 
+	shared_ptr<XscTcpChannel> newXscTcpChannel(XscTcpWorker* wk, int cfd, const string& peer); 
 };
 
 #endif 

@@ -31,7 +31,7 @@
 class XscTcpLog: public XscLog
 {
 public:
-	virtual shared_ptr<XscTcpChannel> newXscTcpChannel(shared_ptr<XscTcpWorker> wk, int cfd, const string& peer) = 0; 
+	virtual shared_ptr<XscTcpChannel> newXscTcpChannel(XscTcpWorker* wk, int cfd, const string& peer) = 0; 
 public:
 	XscTcpLog();
 	virtual ~XscTcpLog();

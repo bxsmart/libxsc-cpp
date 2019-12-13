@@ -20,6 +20,10 @@
 #ifndef WS_XSCWEBSOCKETCHANNEL_H_
 #define WS_XSCWEBSOCKETCHANNEL_H_
 
+#if !defined (__LIBXSC_H__) && !defined (LIBXSC)
+#error only libxsc.h can be included directly.
+#endif
+
 #include "XscWebSocketWorker.h"
 #include "../tcp/XscTcpChannel.h"
 
@@ -35,7 +39,7 @@ class XscWebSocketChannel: public XscTcpChannel
 public:
 	void send(uchar* dat, int len); 
 public:
-	XscWebSocketChannel(shared_ptr<XscWebSocketWorker> wk, int mtu, int cfd, const string &peer);
+	XscWebSocketChannel(XscWebSocketWorker* wk, int mtu, int cfd, const string &peer);
 	virtual ~XscWebSocketChannel();
 };
 

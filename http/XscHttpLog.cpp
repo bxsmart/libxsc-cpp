@@ -24,9 +24,9 @@ XscHttpLog::XscHttpLog()
 
 }
 
-shared_ptr<XscTcpChannel> XscHttpLog::newXscTcpChannel(shared_ptr<XscTcpWorker> wk, int cfd, const string& peer)
+shared_ptr<XscTcpChannel> XscHttpLog::newXscTcpChannel(XscTcpWorker* wk, int cfd, const string& peer)
 {
-	return this->newXscHttpChannel(static_pointer_cast<XscHttpWorker>(wk), cfd, peer);
+	return this->newXscHttpChannel((XscHttpWorker*) wk, cfd, peer);
 }
 
 XscHttpLog::~XscHttpLog()

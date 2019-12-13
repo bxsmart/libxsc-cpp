@@ -39,7 +39,7 @@ public:
 	ullong getContentLength(); 
 	ullong getBodyLen(); 
 	string getHeader(const string& key); 
-	XscHttpChannel(shared_ptr<XscHttpWorker> wk, int mtu, int cfd, const string &peer);
+	XscHttpChannel(XscHttpWorker* wk, int mtu, int cfd, const string &peer);
 	virtual ~XscHttpChannel();
 public:
 	virtual bool evnHeader(XscHttpWorker* wk, map<string, string>& header) = 0; 

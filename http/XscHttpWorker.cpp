@@ -20,8 +20,8 @@
 #include "XscHttpWorker.h"
 #include  "XscHttpServer.h"
 
-XscHttpWorker::XscHttpWorker(shared_ptr<XscHttpServer> httpServer, int maxFdSize) :
-		XscTcpWorker(httpServer, maxFdSize)
+XscHttpWorker::XscHttpWorker(XscHttpServer* httpServer) :
+		XscTcpWorker(httpServer)
 {
 
 }

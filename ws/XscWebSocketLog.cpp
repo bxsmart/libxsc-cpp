@@ -24,9 +24,9 @@ XscWebSocketLog::XscWebSocketLog()
 
 }
 
-shared_ptr<XscTcpChannel> XscWebSocketLog::newXscTcpChannel(shared_ptr<XscTcpWorker> wk, int cfd, const string& peer)
+shared_ptr<XscTcpChannel> XscWebSocketLog::newXscTcpChannel(XscTcpWorker* wk, int cfd, const string& peer)
 {
-	return this->newXscWebSocketChannel(static_pointer_cast<XscWebSocketWorker>(wk), cfd, peer);
+	return this->newXscWebSocketChannel((XscWebSocketWorker*) wk, cfd, peer);
 }
 
 XscWebSocketLog::~XscWebSocketLog()

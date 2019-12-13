@@ -37,15 +37,15 @@ public:
 	unordered_map<int , shared_ptr<XscTcpChannel>> channel; 
 	list<shared_ptr<XscTcpChannel>> h2ns; 
 public:
-	XscTcpWorker(shared_ptr<XscTcpServer> tcpServer, int maxFdSize);
-	void loop(); 
+	XscTcpWorker(XscTcpServer* tcpServer);
 	bool publish(const string& host, int port); 
+	void loop(); 
 	string toString();
 	virtual ~XscTcpWorker();
 public:
-	void addTcpChannel(shared_ptr<XscTcpChannel> channel); 
-	shared_ptr<XscTcpChannel> findTcpChannel(int cfd); 
-	void delTcpChannel(int cfd); 
+	void addChannel(shared_ptr<XscTcpChannel> channel); 
+	shared_ptr<XscTcpChannel> findChannel(int cfd); 
+	void delChannel(int cfd); 
 	void addCfd4Read(int cfd); 
 	void addCfd4Write(int cfd); 
 	void delCfd4Write(int cfd); 

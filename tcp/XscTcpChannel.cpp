@@ -25,13 +25,13 @@
 #include "../core/XscTimerMgr.h"
 #include "../core/XscWorkerStat.h"
 
-XscTcpChannel::XscTcpChannel(ActorType type, shared_ptr<XscTcpWorker> wk, int mtu, int cfd, const string &peer) :
+XscTcpChannel::XscTcpChannel(ActorType type, XscTcpWorker* wk, int mtu, int cfd, const string &peer) :
 		XscChannel(XscProtocolType::XSC_PROTOCOL_TCP, type, wk, cfd, peer)
 {
 	this->est = false;
 	this->dlen = 0;
 	this->rbuf = (uchar*) ::malloc(mtu);
-	this->wbuf = new queue<xsc_tcp_channel_wbuf*>();
+	this->wbuf = new queue<xsc_channel_wbuf*>();
 }
 
 void XscTcpChannel::send(uchar* dat, int len)
@@ -42,7 +42,7 @@ void XscTcpChannel::send(uchar* dat, int len)
 	static_pointer_cast<XscTcpLog>(wk->server->log)->tx(this, dat, len);
 	if (!this->est) 
 	{
-		LOG_DEBUG("connection was lost, can not send any more, this: %s", this->toString().c_str())
+		LOG_DEBUG("tcp channel was lost, can not send any more, this: %s", this->toString().c_str())
 		return;
 	}
 	if (this->wbuf != NULL)
@@ -57,12 +57,12 @@ void XscTcpChannel::send(uchar* dat, int len)
 	}
 	if (errno == EAGAIN || errno == EWOULDBLOCK)
 	{
-		LOG_DEBUG("tcp buffer was full, can not send anymore, we will close this peer: %s, size: %08X", this->peer.c_str(), len)
+		LOG_DEBUG("tcp channel buffer was full, can not send anymore, we will close this peer: %s, size: %08X", this->peer.c_str(), len)
 	} else
 	{
-		LOG_DEBUG("client socket exception, peer: %s, cfd: %d, size: %08X, errno: %s(%d)", this->peer.c_str(), this->cfd, len, strerror(errno), errno)
+		LOG_DEBUG("client socket exception, peer: %s, cfd: %d, size: %08X, errno: %s(%d)", this->peer.c_str(), this->cfd, len, ::strerror(errno), errno)
 	}
-	wk->delTcpChannel(this->cfd);
+	wk->delChannel(this->cfd);
 	this->est = false;
 	this->cleanWbuf();
 	this->clean();
@@ -73,7 +73,7 @@ void XscTcpChannel::sendBuf(uchar* dat, int len)
 {
 	if (!this->wbuf->empty()) 
 	{
-		xsc_tcp_channel_wbuf* wb = (xsc_tcp_channel_wbuf*) ::malloc(sizeof(xsc_tcp_channel_wbuf));
+		xsc_channel_wbuf* wb = (xsc_channel_wbuf*) ::malloc(sizeof(xsc_channel_wbuf));
 		wb->len = len;
 		wb->pos = 0;
 		wb->dat = (uchar*) ::malloc(wb->len);
@@ -91,7 +91,7 @@ void XscTcpChannel::sendBuf(uchar* dat, int len)
 	if (errno == EAGAIN || errno == EWOULDBLOCK) 
 	{
 		w = w < 0 ? 0 : w;
-		xsc_tcp_channel_wbuf* wb = (xsc_tcp_channel_wbuf*) ::malloc(sizeof(xsc_tcp_channel_wbuf));
+		xsc_channel_wbuf* wb = (xsc_channel_wbuf*) ::malloc(sizeof(xsc_channel_wbuf));
 		wb->len = len - w;
 		wb->pos = 0;
 		wb->dat = (uchar*) ::malloc(wb->len);
@@ -107,7 +107,7 @@ void XscTcpChannel::sendBuf(uchar* dat, int len)
 		goto loop;
 	}
 	LOG_DEBUG("client socket exception, peer: %s, cfd: %d, w: %d, len: %d, errno: %d", this->peer.c_str(), this->cfd, w, len, errno)
-	((XscTcpWorker*) this->worker)->delTcpChannel(this->cfd);
+	((XscTcpWorker*) this->worker)->delChannel(this->cfd);
 	this->est = false;
 	this->cleanWbuf();
 	this->clean();
@@ -119,7 +119,7 @@ void XscTcpChannel::evnSend()
 	XscTcpWorker* wk = (XscTcpWorker*) this->worker;
 	while (this->wbuf && !this->wbuf->empty())
 	{
-		xsc_tcp_channel_wbuf* wb = this->wbuf->front();
+		xsc_channel_wbuf* wb = this->wbuf->front();
 		int r = wb->len - wb->pos;
 		int w = ::send(this->cfd, wb->dat + wb->pos, r, MSG_DONTWAIT);
 		if (w == r) 
@@ -128,7 +128,7 @@ void XscTcpChannel::evnSend()
 			::free(wb->dat);
 			::free(wb);
 			wk->stat->incv(XscWorkerStatItem::XSC_WORKER_TX_BYTES, w);
-			this->stat.incv(XscTcpChannelStatItem::XSC_TCP_CONNECTION_TX_BYTES, w);
+			this->stat.incv(XscTcpChannelStatItem::XSC_TCP_CHANNEL_TX_BYTES, w);
 			continue;
 		}
 		if (errno == EAGAIN || errno == EWOULDBLOCK) 
@@ -136,7 +136,7 @@ void XscTcpChannel::evnSend()
 			if (w > 0) 
 			{
 				wk->stat->incv(XscWorkerStatItem::XSC_WORKER_TX_BYTES, w);
-				this->stat.incv(XscTcpChannelStatItem::XSC_TCP_CONNECTION_TX_BYTES, w);
+				this->stat.incv(XscTcpChannelStatItem::XSC_TCP_CHANNEL_TX_BYTES, w);
 				wb->pos += w;
 			}
 			return;
@@ -144,12 +144,12 @@ void XscTcpChannel::evnSend()
 		if (errno == 0 && w > 0)
 		{
 			wk->stat->incv(XscWorkerStatItem::XSC_WORKER_TX_BYTES, w);
-			this->stat.incv(XscTcpChannelStatItem::XSC_TCP_CONNECTION_TX_BYTES, w);
+			this->stat.incv(XscTcpChannelStatItem::XSC_TCP_CHANNEL_TX_BYTES, w);
 			wb->pos += w;
 			continue;
 		}
 		LOG_DEBUG("client socket exception, peer: %s, cfd: %d, errno: %s(%d)", this->peer.c_str(), this->cfd, strerror(errno), errno)
-		wk->delTcpChannel(this->cfd);
+		wk->delChannel(this->cfd);
 		this->est = false;
 		this->cleanWbuf();
 		this->clean();
@@ -174,7 +174,7 @@ void XscTcpChannel::closeSlient()
 	this->clean();
 	if (!this->est)
 		return;
-	((XscTcpWorker*) this->worker)->delTcpChannel(this->cfd);
+	((XscTcpWorker*) this->worker)->delChannel(this->cfd);
 	this->est = false;
 }
 
@@ -185,7 +185,7 @@ void XscTcpChannel::lazyClose()
 		LOG_TRACE("channel already lost: %s", this->toString().c_str())
 		return;
 	}
-	shared_ptr<XscTcpChannel> channel = ((XscTcpWorker*) this->worker)->findTcpChannel(this->cfd);
+	shared_ptr<XscTcpChannel> channel = ((XscTcpWorker*) this->worker)->findChannel(this->cfd);
 	if (channel == nullptr) 
 	{
 		LOG_FAULT("it`s a bug, this: %s", this->toString().c_str())
@@ -206,7 +206,7 @@ void XscTcpChannel::cleanWbuf()
 {
 	while (this->wbuf != NULL && !this->wbuf->empty())
 	{
-		xsc_tcp_channel_wbuf* wb = this->wbuf->front();
+		xsc_channel_wbuf* wb = this->wbuf->front();
 		::free(wb->dat);
 		::free(wb);
 		this->wbuf->pop();

@@ -28,6 +28,8 @@
 
 class XscTcpServer;
 class XscTcpWorker;
+class XscRudpServer;
+class XscRudpWorker;
 
 class Xsc
 {
@@ -40,10 +42,12 @@ public:
 	static void hold(function<void(ullong now)> cb); 
 public:
 	static int getXscWorkIndex(); 
+	static shared_ptr<XscServer> getXscServer(); 
+	static shared_ptr<XscTcpServer> getXscTcpServer(); 
+	static shared_ptr<XscRudpServer> getXscRudpServer(); 
 	static XscWorker* getXscWorker(); 
 	static XscTcpWorker* getXscTcpWorker(); 
-	static shared_ptr<XscTcpServer> getXscTcpServer(); 
-	static shared_ptr<XscServer> getXscServer(); 
+	static XscRudpWorker* getXscRudpWorker(); 
 	static int genXscWorkerIndex(); 
 private:
 	Xsc();

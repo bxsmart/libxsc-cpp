@@ -28,11 +28,11 @@
 
 enum XscTcpChannelStatItem
 {
-	XSC_TCP_CONNECTION_RX_BYTES = 0x00, 
-	XSC_TCP_CONNECTION_RX_MSGS, 
-	XSC_TCP_CONNECTION_TX_BYTES, 
-	XSC_TCP_CONNECTION_TX_MSGS, 
-	XSC_TCP_CONNECTION_STAT_END
+	XSC_TCP_CHANNEL_RX_BYTES = 0x00, 
+	XSC_TCP_CHANNEL_RX_MSGS, 
+	XSC_TCP_CHANNEL_TX_BYTES, 
+	XSC_TCP_CHANNEL_TX_MSGS, 
+	XSC_TCP_CHANNEL_STAT_END
 };
 
 class XscTcpChannelStat
@@ -46,7 +46,7 @@ public:
 	XscTcpChannelStat();
 	virtual ~XscTcpChannelStat();
 private:
-	atomic_ullong items[XscTcpChannelStatItem::XSC_TCP_CONNECTION_STAT_END] = { 0 };
+	atomic_ullong items[XscTcpChannelStatItem::XSC_TCP_CHANNEL_STAT_END] = { 0 };
 };
 
 #endif 

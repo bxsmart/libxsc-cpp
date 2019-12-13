@@ -20,6 +20,10 @@
 #ifndef CORE_XSCUSR_H_
 #define CORE_XSCUSR_H_
 
+#if !defined (__LIBXSC_H__) && !defined (LIBXSC)
+#error only libxsc.h can be included directly.
+#endif
+
 #include "../actor/Actor.h"
 
 class XscChannel;

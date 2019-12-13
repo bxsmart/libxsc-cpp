@@ -20,6 +20,10 @@
 #ifndef CORE_XSCWORKERSTAT_H_
 #define CORE_XSCWORKERSTAT_H_
 
+#if !defined (__LIBXSC_H__) && !defined (LIBXSC)
+#error only libxsc.h can be included directly.
+#endif
+
 #include <libmisc.h>
 
 enum XscWorkerStatItem
