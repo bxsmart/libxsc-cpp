@@ -14,4 +14,4 @@
 
 * 所以它看上去是这样的:
 
-![img](https://github.com/dev5cn/libxsc-cpp/blob/master/libxsc-cpp-arch.svg)
+![img](https://github.com/dev5cn/libxsc-cpp/blob/master/libxsc-cpp-arch.png)
