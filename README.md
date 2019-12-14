@@ -10,4 +10,4 @@
 
 * 它不支持任何应用层协议. 
 
- 在[X-MSG-IM](https://github.com/dev5cn/x-msg-im)系统中, 它与[libxsc-proto-cpp](https://github.com/dev5cn/libxsc-proto-cpp)和[libx-msg-im-xsc](https://github.com/dev5cn/libx-msg-im-xsc)一起为所有核心网元提供统一的网络编程框架.
+* 在[X-MSG-IM](https://github.com/dev5cn/x-msg-im)系统中, 它与[libxsc-proto-cpp](https://github.com/dev5cn/libxsc-proto-cpp)和[libx-msg-im-xsc](https://github.com/dev5cn/libx-msg-im-xsc)一起为所有核心网元提供统一的网络编程框架.
