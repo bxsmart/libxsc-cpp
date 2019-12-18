@@ -10,11 +10,12 @@ ADD_DEFINITIONS(-Wno-builtin-macro-redefined)
 SET(CMAKE_CXX_FLAGS $ENV{CXX_FLAGS})
 SET(CMAKE_C_FLAGS $ENV{CXX_FLAGS})
 #
-FILE(GLOB SRC "./*/*.cpp")
+FILE(GLOB SRC0 "./*/*.cpp")
+FILE(GLOB SRC1 "./*/*.c")
 #
 PROJECT(xsc-cpp)
 #
-ADD_LIBRARY(xsc-cpp STATIC ${SRC})
+ADD_LIBRARY(xsc-cpp STATIC ${SRC0} ${SRC1})
 INCLUDE(./__file__.cmake)
 REDEFINE_FILE_MACRO(xsc-cpp)
 

@@ -31,7 +31,7 @@ class XscChannel: public Actor
 {
 public:
 	XscProtocolType proType; 
-	bool est; 
+	volatile bool est; 
 	int cfd; 
 	string peer; 
 	XscWorker* worker; 

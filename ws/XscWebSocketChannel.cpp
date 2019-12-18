@@ -45,7 +45,7 @@ void XscWebSocketChannel::send(uchar* dat, int len)
 		uchar* buf = (uchar*) ::malloc(size);
 		buf[0] = 0x82;
 		buf[1] = 0x7E;
-		ushort xx = ::ntohs(len);
+		ushort xx = htons(len);
 		::memcpy(buf + 2, &xx, 2);
 		::memcpy(buf + 4, dat, len);
 		XscTcpChannel::send(buf, size);
